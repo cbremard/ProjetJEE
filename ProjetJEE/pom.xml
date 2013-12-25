@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>javaEE</groupId>
-	<artifactId>ProjetJEE</artifactId>
+	<artifactId>projetJEE</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>TP 01: Création d'un premier service REST.</description>
 	<packaging>war</packaging>
 
-	<name>ProjetJEE</name>
+	<name>projetJEE</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
