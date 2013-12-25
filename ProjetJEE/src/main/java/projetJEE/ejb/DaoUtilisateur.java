@@ -1,8 +1,6 @@
-package javaEE.projetJEE.ejb;
+package projetJEE.ejb;
 
 import java.util.List;
-
-import javaEE.projetJEE.modele.Utilisateur;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
@@ -14,6 +12,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import projetJEE.modele.Utilisateur;
 
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)

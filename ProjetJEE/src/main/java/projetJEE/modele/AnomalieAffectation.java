@@ -1,4 +1,4 @@
-package javaEE.projetJEE.modele;
+package projetJEE.modele;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

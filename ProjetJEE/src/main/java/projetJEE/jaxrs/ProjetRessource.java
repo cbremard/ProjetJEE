@@ -1,10 +1,6 @@
-package javaEE.projetJEE.jaxrs;
+package projetJEE.jaxrs;
 
 import java.util.List;
-
-import javaEE.projetJEE.ejb.GestionProjet;
-import javaEE.projetJEE.modele.Anomalie;
-import javaEE.projetJEE.modele.Projet;
 
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
@@ -20,6 +16,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import projetJEE.ejb.GestionProjet;
+import projetJEE.modele.Anomalie;
+import projetJEE.modele.Projet;
 
 @Path("projets")
 public class ProjetRessource {

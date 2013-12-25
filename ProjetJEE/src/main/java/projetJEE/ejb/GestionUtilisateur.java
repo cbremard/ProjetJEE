@@ -1,15 +1,15 @@
-package javaEE.projetJEE.ejb;
+package projetJEE.ejb;
 
 import java.net.URI;
 import java.util.List;
-
-import javaEE.projetJEE.modele.Utilisateur;
-import javaEE.projetJEE.modele.UtilisateurListe;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import projetJEE.modele.Utilisateur;
+import projetJEE.modele.UtilisateurListe;
 
 
 @Stateless

@@ -1,17 +1,17 @@
-package javaEE.projetJEE.ejb;
+package projetJEE.ejb;
 
 import java.net.URI;
 import java.util.List;
-
-import javaEE.projetJEE.modele.Anomalie;
-import javaEE.projetJEE.modele.AnomalieAffectation;
-import javaEE.projetJEE.modele.Projet;
-import javaEE.projetJEE.modele.Utilisateur;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import projetJEE.modele.Anomalie;
+import projetJEE.modele.AnomalieAffectation;
+import projetJEE.modele.Projet;
+import projetJEE.modele.Utilisateur;
 
 @Stateless
 public class GestionProjet {

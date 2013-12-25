@@ -1,8 +1,4 @@
-package javaEE.projetJEE.jaxrs;
-
-import javaEE.projetJEE.ejb.GestionUtilisateur;
-import javaEE.projetJEE.modele.Utilisateur;
-import javaEE.projetJEE.modele.UtilisateurListe;
+package projetJEE.jaxrs;
 
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
@@ -19,6 +15,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import projetJEE.ejb.GestionUtilisateur;
+import projetJEE.modele.Utilisateur;
+import projetJEE.modele.UtilisateurListe;
 
 @Path("utilisateurs")
 public class UtilisateurRessource {
