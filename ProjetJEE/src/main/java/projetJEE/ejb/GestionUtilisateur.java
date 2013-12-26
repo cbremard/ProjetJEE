@@ -1,6 +1,7 @@
 package projetJEE.ejb;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -8,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import projetJEE.modele.Anomalie;
 import projetJEE.modele.Utilisateur;
 import projetJEE.modele.UtilisateurListe;
 
@@ -33,8 +35,6 @@ public class GestionUtilisateur {
 			dao.persisterUtilisateur(utilisateur);
 			uriReponse = uri.getAbsolutePathBuilder().path(utilisateur.getLogin()).build();
 			reponse = Response.created(uriReponse).build();
-		}else if(erreur=="Utilisateur non habilité"){
-			reponse = Response.status(401).entity("Utilisateur non habilité").build();
 		}else{
 			reponse = Response.status(Response.Status.BAD_REQUEST).entity(erreur).build();
 		}
@@ -44,6 +44,7 @@ public class GestionUtilisateur {
 	public UtilisateurListe getUtilisateurs(final int page, final int nbItems, final UriInfo uri) {
 		List<Utilisateur> utilisateurs;
 		UtilisateurListe utilisateursPartiel;
+		mettreAjourListeDesAnomaliesParUtilisateur();
 		utilisateurs = dao.getUtilisateurs();
 		utilisateursPartiel = new UtilisateurListe();
 		if(page>0 && nbItems>0 && nbItems*(page-1)<utilisateurs.size()){
@@ -54,11 +55,50 @@ public class GestionUtilisateur {
 			if(page>1){
 				utilisateursPartiel.setPagePrecedente(uri.getAbsolutePath()+"?page="+(page-1)+"&nbItems="+nbItems);
 			}
-			if(nbItems*page <= utilisateurs.size()){
+			if(nbItems*page < utilisateurs.size()){
 				utilisateursPartiel.setPageSuivante(uri.getAbsolutePath()+"?page="+(page+1)+"&nbItems="+nbItems);
 			}
 		}
 		return utilisateursPartiel;
+	}
+
+	public Utilisateur getUtilisateur(String login) {
+		mettreAjourListeDesAnomaliesParUtilisateur();
+		return dao.getUtilisateur(login);
+	}
+
+	public List<Anomalie> getAnomaliesDeUtilisateur(String login) {
+		Utilisateur utilisateur;
+		List<Anomalie> anomalies = new ArrayList<Anomalie>();
+		utilisateur = dao.getUtilisateur(login);
+		if(utilisateur != null){
+			mettreAjourListeDesAnomaliesParUtilisateur();
+			anomalies = utilisateur.getListeAnomalies();
+		}
+		return anomalies;
+	}
+
+	private void mettreAjourListeDesAnomaliesParUtilisateur() {
+		List<Anomalie> anomalies = dao.getAnomalies();
+		List<Utilisateur> utilisateurs = dao.getUtilisateurs();
+		Utilisateur utilisateur;
+		if(utilisateurs!=null){
+			for (Utilisateur utilisateurCourant : utilisateurs) {
+				utilisateurCourant.setListeAnomalies(new ArrayList<Anomalie>());
+				dao.persisterUtilisateur(utilisateurCourant);
+			}
+		}
+		if(anomalies != null){
+			for (Anomalie anomalie : anomalies) {
+				try{
+					utilisateur = dao.getUtilisateur(anomalie.getLoginUtilisateur());
+					utilisateur.add(anomalie);
+					dao.persisterUtilisateur(utilisateur);
+				}catch(Exception e){
+					System.err.println("Echec lors de la mise à jour des anomalies de l'utilisateur \""+anomalie.getLoginUtilisateur()+"\"");
+				}
+			}
+		}
 	}
 	
 	/**
@@ -69,8 +109,13 @@ public class GestionUtilisateur {
 	 */
 	private String utilisateurTestValidite(Utilisateur utilisateur) {
 		String resultat = "";
+		if(utilisateur.getLogin().length()==0){
+			resultat += "Le login du nouvel utilisateur doit être renseigné. ";
+		}else if(dao.UtilisateurExisteDejaEnBase(utilisateur.getLogin())){
+			resultat += "Le login "+utilisateur.getLogin()+" éxiste est déjà utilisé. ";
+		}
 		if(utilisateur.getNom().length()==0){
-			resultat += "Le nom de du nouvel utilisateur doit être renseigné. ";
+			resultat += "Le nom du nouvel utilisateur doit être renseigné. ";
 		}
 		if(utilisateur.getPrenom().length()==0){
 			resultat += "Le prénom du nouvel utilisateur doit être renseigné. ";
@@ -84,9 +129,6 @@ public class GestionUtilisateur {
 			resultat += "Le mot de passe du nouvel utilisateur doit être renseigné. ";
 		}else if(utilisateur.getMotDePasse().length()<6){
 			resultat += "Le mot de passe du nouvel utilisateur doit dépasser 6 caractères. ";
-		}
-		if(dao.UtilisateurExisteDejaEnBase(utilisateur.getLogin())){
-			resultat = "Utilisateur non habilité";
 		}
 		if(resultat.length()==0){
 			resultat = "OK";
@@ -104,10 +146,6 @@ public class GestionUtilisateur {
 			resultat = email.substring(indexDeLarobase).contains(".");
 		}
 		return resultat;
-	}
-
-	public Utilisateur getUtilisateur(String login) {
-		return dao.getUtilisateur(login);
 	}
 	
 

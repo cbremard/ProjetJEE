@@ -18,8 +18,8 @@ import projetJEE.modele.Anomalie;
 import projetJEE.modele.Projet;
 import projetJEE.modele.Utilisateur;
 
-@Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
+@Singleton
 public class Dao {
 
 	@PersistenceContext
@@ -49,8 +49,8 @@ public class Dao {
 		persisterUtilisateur(utilisateur8);
 
 		Projet projet1 = new Projet(); projet1.setNom("projet1");
-		Anomalie anomalie1 = new Anomalie(); anomalie1.setSujet("anomalie1"); anomalie1.setDescription("Description de l'anomalie1"); anomalie1.setNomProjet("projet1"); projet1.add(anomalie1);
-		Anomalie anomalie2 = new Anomalie(); anomalie2.setSujet("anomalie2"); anomalie2.setDescription("Description de l'anomalie2"); anomalie2.setNomProjet("projet1"); projet1.add(anomalie2);
+		Anomalie anomalie1 = new Anomalie(); anomalie1.setSujet("anomalie1"); anomalie1.setDescription("Description de l'anomalie1"); anomalie1.setNomProjet("projet1");projet1.add(anomalie1);
+		Anomalie anomalie2 = new Anomalie(); anomalie2.setSujet("erreur de compilation"); anomalie2.setDescription("La complication du projet écoue à cause d'un bug"); anomalie2.setNomProjet("projet1"); projet1.add(anomalie2);
 		persisterProjet(projet1);
 		Projet projet2 = new Projet(); projet2.setNom("projet2");
 		Anomalie anomalie3 = new Anomalie(); anomalie3.setSujet("anomalie3"); anomalie3.setDescription("Description de l'anomalie3"); anomalie2.setNomProjet("projet2"); projet2.add(anomalie3);
@@ -62,7 +62,8 @@ public class Dao {
 	/*
 	 * Les Getters permettant de lire la BDD
 	 */
-	
+
+	@Lock(LockType.READ)
 	public Utilisateur getUtilisateur(String login) {
 		return bdd.find(Utilisateur.class, login);
 	}
@@ -78,6 +79,7 @@ public class Dao {
 		return bdd.find(Projet.class, nom);
 	}
 
+	@Lock(LockType.READ)
 	@SuppressWarnings("unchecked")
 	public List<Projet> getProjets() {
 		//TODO Vérifier s'il n'y a pas d'autre moyens. Le but étant de ne pas avoir besoin d'écrire une requête SQL.
@@ -107,7 +109,7 @@ public class Dao {
 			projet = getProjet(nomProjet);
 			anomalies = projet.getAnomalies();
 			for (Anomalie anomalieCourante : anomalies) {
-				if(anomalieCourante.getSujet()==sujetAnomalie){
+				if(anomalieCourante.getSujet().equals(sujetAnomalie)){
 					anomalie=anomalieCourante;
 					break;
 				}
@@ -117,14 +119,26 @@ public class Dao {
 		}
 		return anomalie;
 	}
+
+	@Lock(LockType.READ)
+	@SuppressWarnings("unchecked")
+	public List<Anomalie> getAnomalies() {
+		//TODO Vérifier s'il n'y a pas d'autre moyens. Le but étant de ne pas avoir besoin d'écrire une requête SQL.
+		return bdd.createNativeQuery("select * from anomalie",Anomalie.class).getResultList();
+	}
 	
 	/*
-	 * Les Setters permettant de modifier la BDD
+	 * Les Méthodes permettant de supprimer des éléments de la BDD
 	 */
 	
 	@Lock(LockType.WRITE)
-	public void removeProjet(Projet oldProjet) {
-		bdd.remove(oldProjet);
+	public void removeProjet(Projet projetAsupprimer) {
+		bdd.remove(projetAsupprimer);
+	}
+
+	@Lock(LockType.WRITE)
+	public void removeAnomalie(Anomalie anomalieAsupprimer) {
+		bdd.remove(anomalieAsupprimer);
 	}
 	
 	/*
@@ -153,8 +167,6 @@ public class Dao {
         return projet;
     }
     
-	@Lock(LockType.WRITE)
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void persisterAnomalie(String nomProjet, Anomalie anomalie) {
 		Projet projetCourant;
 		projetCourant = getProjet(nomProjet);

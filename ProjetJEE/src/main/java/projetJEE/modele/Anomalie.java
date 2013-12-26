@@ -3,11 +3,15 @@ package projetJEE.modele;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -39,18 +43,24 @@ public class Anomalie {
 	@Column(columnDefinition="VARCHAR(8)")
 	private String etat;
 	@XmlElement(name="Affectation")
-	@Transient
-	private AnomalieAffectation affectation;
+	@OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private AnomalieAffectation affectation;
 	@XmlElementWrapper(name = "Notes")
     @XmlElement(name = "Note")
-	@Transient
+	@OneToMany(cascade=CascadeType.ALL) 
+	@JoinColumn(name = "ID_ANOMALIE")
 	private List<Note> notes;
 	
 	public Anomalie() {
 		super();
+		this.nomProjet="";
+		this.loginUtilisateur="";
+		this.sujet="";
+		this.description="";
 		setEtatToNouveau();
-		notes = new ArrayList<Note>();
 		affectation = new AnomalieAffectation();
+		notes = new ArrayList<Note>();
 	}
 
 	public long getId() {

@@ -1,5 +1,7 @@
 package projetJEE.jaxrs;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import projetJEE.ejb.GestionUtilisateur;
+import projetJEE.modele.Anomalie;
 import projetJEE.modele.Utilisateur;
 import projetJEE.modele.UtilisateurListe;
 
@@ -48,6 +51,14 @@ public class UtilisateurRessource {
     public Utilisateur getUtilisateur(@PathParam("login") final String login) {
         System.out.println("Appel du service de récupération d'un utilisateur par son login");
         return gestionUtilisateur.getUtilisateur(login);
+    }
+    
+    @GET
+    @Produces({MediaType.APPLICATION_XML})
+    @Path("{login}/anomalies")
+    public List<Anomalie> getAnomaliesDeUtilisateur(@PathParam("login") final String login) {
+        System.out.println("Appel du service de récupération des anomalies affectées à un utilisateur");
+        return gestionUtilisateur.getAnomaliesDeUtilisateur(login);
     }
     
 

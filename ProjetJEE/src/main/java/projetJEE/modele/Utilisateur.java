@@ -1,10 +1,13 @@
 package projetJEE.modele;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -17,25 +20,36 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Utilisateur {
 
 	@Id
-    @XmlElement(name = "Login")
+    @XmlElement(name = "Login", required = true)
 	private String login;
-    @XmlElement(name = "Nom")
+    @XmlElement(name = "Nom", required = true)
 	private String nom;
-    @XmlElement(name = "Prenom")
+    @XmlElement(name = "Prenom", required = true)
 	private String prenom;
-    @XmlElement(name = "Email")
+    @XmlElement(name = "Email", required = true)
 	private String email;
-    @XmlElement(name = "MotDePasse")
+    @XmlElement(name = "MotDePasse", required = true)
 	private String motDePasse;
     @XmlElement(name = "IsAdmin")
 	private boolean isAdmin;
     
     @XmlElementWrapper(name = "Anomalies")
     @XmlElement(name = "Anomalie")
-    @Transient
+	@OneToMany(cascade=CascadeType.ALL) 
+	@JoinColumn(name = "LOGIN_UTILISATEUR")
     private List<Anomalie> listeAnomalies;
 
-
+    
+	public Utilisateur() {
+		super();
+		this.login="";
+		this.nom="";
+		this.prenom="";
+		this.email="";
+		this.motDePasse="";
+		this.isAdmin=false;
+		this.listeAnomalies = new ArrayList<Anomalie>();
+	}
 	public String getNom() {
 		return nom;
 	}
@@ -77,6 +91,12 @@ public class Utilisateur {
 	}
 	public void setListeAnomalies(List<Anomalie> listeAnomalies) {
 		this.listeAnomalies = listeAnomalies;
+	}
+	public void add(Anomalie anomalie) {
+		this.listeAnomalies.add(anomalie);
+	}
+	public void remove(int index) {
+		this.listeAnomalies.remove(index);
 	}
     
     

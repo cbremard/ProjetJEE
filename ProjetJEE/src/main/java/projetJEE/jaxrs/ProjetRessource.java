@@ -17,15 +17,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import projetJEE.ejb.GestionAnomalie;
 import projetJEE.ejb.GestionProjet;
 import projetJEE.modele.Anomalie;
+import projetJEE.modele.Note;
 import projetJEE.modele.Projet;
 
 @Path("projets")
 public class ProjetRessource {
-	
+
 	@EJB
 	private GestionProjet gestionProjet;
+	@EJB
+	private GestionAnomalie gestionAnomalie;
 
 	@POST
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -50,7 +54,58 @@ public class ProjetRessource {
 	@Path("{nom}/anomalies")
 	public Response addAnomalie(final Anomalie anomalie, @PathParam("nom") final String nomProjet, @Context final UriInfo uri){
 		System.out.println("Appel du service d'ajout d'une anomalie à un projet");
-		return gestionProjet.addAnomalie(anomalie, nomProjet, uri);
+		return gestionAnomalie.addAnomalie(anomalie, nomProjet, uri);
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_XML)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	@Path("{nom}/anomalies/{sujet}")
+	public Response modifierAnomalie(final Anomalie anomalieModifie,
+									@PathParam("nom") final String nomProjet,
+									@PathParam("sujet") final String sujetAncinneAnomalie,
+									@Context final UriInfo uri){
+		System.out.println("Appel du service de modification d'une anomalie d'un projet");
+		return gestionAnomalie.modifierAnomalie(anomalieModifie, nomProjet, sujetAncinneAnomalie, uri);
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_XML)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	@Path("{nom}/anomalies/{sujet}/AFFECTEE")
+	public Response changeEtatToAffectee(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri){
+		System.out.println("Appel du service de modification de l'état d'une anomalie d'un projet pour un état AFFECTEE");
+		try {
+			return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri, "AFFECTEE");
+		} catch (Exception e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_XML)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	@Path("{nom}/anomalies/{sujet}/RESOLUE")
+	public Response changeEtatToResolue(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri){
+		System.out.println("Appel du service de modification de l'état d'une anomalie d'un projet pour un état RESOLUE");
+		try {
+			return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri, "RESOLUE");
+		} catch (Exception e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_XML)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	@Path("{nom}/anomalies/{sujet}/FERMEE")
+	public Response changeEtatToFermee(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri){
+		System.out.println("Appel du service de modification de l'état d'une anomalie d'un projet pour un état FERMEE");
+		try {
+			return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri,"FERMEE");
+		} catch (Exception e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
 	}
 	
 	@POST
@@ -59,7 +114,7 @@ public class ProjetRessource {
 	@Path("{nom}/anomalies/{sujet}/addUtilisateur")
 	public Response addUtilisateurToAnomalie(@QueryParam("login")  final String login, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujet, @Context final UriInfo uri){
 		System.out.println("Appel du service d'ajout d'un utilisateur à une anomalie d'un projet");
-		return gestionProjet.addUtilisateurToAnomalie(login, nomProjet, sujet, uri);
+		return gestionAnomalie.addUtilisateurToAnomalie(login, nomProjet, sujet, uri);
 	}
 
     @GET
@@ -67,15 +122,15 @@ public class ProjetRessource {
     @Path("{nom}/anomalies")
     public List<Anomalie> getAnomalies(@PathParam("nom") final String nomProjet) {
         System.out.println("Appel du service de récupération des anomalies d'un projet");
-        return gestionProjet.getAnomaliesOfProject(nomProjet);
+        return gestionAnomalie.getAnomaliesOfProject(nomProjet);
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML})
     @Path("{nom}/anomalies/{sujet}")
     public Anomalie getAnomalie(@PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie) {
-        System.out.println("Appel du service de récupération des anomalies d'un projet");
-        return gestionProjet.getAnomalieOfProject(nomProjet, sujetAnomalie);
+        System.out.println("Appel du service de récupération de l'anomalie \""+sujetAnomalie+"\" du projet \""+nomProjet+"\"");
+        return gestionAnomalie.getAnomalieOfProject(nomProjet, sujetAnomalie);
     }
 	
     @GET
@@ -98,6 +153,6 @@ public class ProjetRessource {
     @Path("anomalies/{id}")
     public Anomalie getAnomalies(@PathParam("id") final long id) {
         System.out.println("Appel du service de récupération des anomalies d'un projet");
-        return gestionProjet.getAnomalie(id);
+        return gestionAnomalie.getAnomalie(id);
     }
 }

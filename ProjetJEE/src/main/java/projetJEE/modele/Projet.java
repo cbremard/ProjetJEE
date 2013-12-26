@@ -20,11 +20,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Projet {
 	
 	@Id
-	@XmlElement(name="Nom")
+	@XmlElement(name = "Nom", required = true)
 	private String nom;
 	@XmlElementWrapper(name = "Anomalies")
     @XmlElement(name = "Anomalie")
-	@OneToMany(cascade=CascadeType.PERSIST) 
+	@OneToMany(cascade=CascadeType.ALL) 
 	@JoinColumn(name = "NOM_PROJET")
 	private List<Anomalie> anomalies;
 	
@@ -33,7 +33,8 @@ public class Projet {
 	
 	public Projet() {
 		super();
-		anomalies = new ArrayList<Anomalie>();
+		this.nom="";
+		this.anomalies = new ArrayList<Anomalie>();
 	}
 	public String getNom() {
 		return nom;
