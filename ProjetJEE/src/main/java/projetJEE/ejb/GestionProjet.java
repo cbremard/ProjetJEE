@@ -11,13 +11,12 @@ import javax.ws.rs.core.UriInfo;
 import projetJEE.modele.Anomalie;
 import projetJEE.modele.AnomalieAffectation;
 import projetJEE.modele.Projet;
-import projetJEE.modele.Utilisateur;
 
 @Stateless
 public class GestionProjet {
 	
 	@EJB
-	private DaoProjet bdd;
+	private Dao dao;
 
 	public Response addProjet(Projet projet, UriInfo uri) {
 		String erreur;
@@ -25,7 +24,7 @@ public class GestionProjet {
 		Response reponse;
 		erreur = projetTestValidite(projet);
 		if(erreur=="OK"){
-			bdd.persister(projet);
+			dao.persisterProjet(projet);
 			uriReponse = uri.getAbsolutePathBuilder().path(projet.getNom()).build();
 			reponse = Response.created(uriReponse).build();
 			}else{
@@ -56,7 +55,7 @@ public class GestionProjet {
 		erreur = anomalieTestValidite(anomalie, nomProjet);
 		if(erreur=="OK"){
 			anomalie.setNomProjet(nomProjet);
-			bdd.persisterAnomalie(nomProjet, anomalie);
+			dao.persisterAnomalie(nomProjet, anomalie);
 			uriReponse = uri.getBaseUriBuilder().path("projets").path("anomalies").path(""+anomalie.getId()).build();
 			reponse = Response.created(uriReponse).build();
 		}else{
@@ -70,7 +69,7 @@ public class GestionProjet {
 		Response reponse=null;
 		Anomalie anomalie;
 		AnomalieAffectation anomalieAffectation = new AnomalieAffectation();
-		if(bdd.find(Utilisateur.class, login) == null){
+		if(dao.getUtilisateur(login) == null){
 			reponse = Response.status(Response.Status.BAD_REQUEST).entity("L'utilisateur "+login+" n'hésite pas dans la base de bonnées").build();
 		}else if(getAnomalieOfProject(nomProjet, sujet)==null){
 			reponse = Response.status(Response.Status.BAD_REQUEST).entity("l'anomalie \""+sujet+"\" n'éxiste pas au sein du projet \""+nomProjet+"\".").build();
@@ -79,7 +78,7 @@ public class GestionProjet {
 			anomalieAffectation.setRefToUtilisateur(uri.getBaseUriBuilder().path("utilisateurs").path(login).build().toString());
 			anomalie.setAffectation(anomalieAffectation);
 			anomalie.setLoginUtilisateur(login);
-			bdd.persisterAnomalie(nomProjet, anomalie);
+			dao.persisterAnomalie(nomProjet, anomalie);
 			uriReponse = uri.getBaseUriBuilder().path("projets").path("anomalies").path(""+anomalie.getId()).build();
 			reponse = Response.created(uriReponse).build();
 		}
@@ -87,22 +86,22 @@ public class GestionProjet {
 	}
 
 	public Projet getProjet(String nom) {
-		return bdd.getProjet(nom);
+		return dao.getProjet(nom);
 	}
 
 	public List<Projet> getProjets() {
-		return bdd.getProjets();
+		return dao.getProjets();
 	}
 
 	private void removeProjet(Projet oldProjet) {
-		bdd.removeProjet(oldProjet);
+		dao.removeProjet(oldProjet);
 	}
 
 	private String projetTestValidite(Projet projet) {
 		String resultat;
 		if(projet.getNom().length()==0){
 			resultat = "Veuillez renseigner un nom de projet";
-		}else if(bdd.existeDejaEnBase(projet)){
+		}else if(dao.ProjetExisteDejaEnBase(projet)){
 			resultat = "Le projet \""+projet.getNom()+"\" est déjà présent en base de données.";
 		}else{
 			resultat = "OK";
@@ -133,15 +132,15 @@ public class GestionProjet {
 	}
 
 	public Anomalie getAnomalie(long id) {
-		return bdd.getAnomalie(id);
+		return dao.getAnomalie(id);
 	}
 
 	public List<Anomalie> getAnomaliesOfProject(String nomProjet) {
-		return bdd.getAnomaliesOfProject(nomProjet);
+		return dao.getAnomaliesOfProject(nomProjet);
 	}
 
 	public Anomalie getAnomalieOfProject(String nomProjet, String sujetAnomalie) {
-		return bdd.getAnomalieOfProject(nomProjet, sujetAnomalie);
+		return dao.getAnomalieOfProject(nomProjet, sujetAnomalie);
 	}
 
 }

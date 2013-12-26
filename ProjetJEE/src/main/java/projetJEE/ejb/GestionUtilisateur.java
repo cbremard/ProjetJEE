@@ -16,7 +16,7 @@ import projetJEE.modele.UtilisateurListe;
 public class GestionUtilisateur {
 	
 	@EJB
-	private DaoUtilisateur bdd;
+	private Dao dao;
 	
 	/**
 	 * Stockage d'un utilisateur dans la base de données
@@ -30,7 +30,7 @@ public class GestionUtilisateur {
 		
 		erreur = utilisateurTestValidite(utilisateur);
 		if(erreur=="OK"){
-			bdd.persister(utilisateur);
+			dao.persisterUtilisateur(utilisateur);
 			uriReponse = uri.getAbsolutePathBuilder().path(utilisateur.getLogin()).build();
 			reponse = Response.created(uriReponse).build();
 		}else if(erreur=="Utilisateur non habilité"){
@@ -44,7 +44,7 @@ public class GestionUtilisateur {
 	public UtilisateurListe getUtilisateurs(final int page, final int nbItems, final UriInfo uri) {
 		List<Utilisateur> utilisateurs;
 		UtilisateurListe utilisateursPartiel;
-		utilisateurs = bdd.getUtilisateurs();
+		utilisateurs = dao.getUtilisateurs();
 		utilisateursPartiel = new UtilisateurListe();
 		if(page>0 && nbItems>0 && nbItems*(page-1)<utilisateurs.size()){
 			for (int i = nbItems*(page-1); i < Math.min(utilisateurs.size(),nbItems*page); i++) {
@@ -85,7 +85,7 @@ public class GestionUtilisateur {
 		}else if(utilisateur.getMotDePasse().length()<6){
 			resultat += "Le mot de passe du nouvel utilisateur doit dépasser 6 caractères. ";
 		}
-		if(bdd.existeDejaEnBase(utilisateur.getLogin())){
+		if(dao.UtilisateurExisteDejaEnBase(utilisateur.getLogin())){
 			resultat = "Utilisateur non habilité";
 		}
 		if(resultat.length()==0){
@@ -107,7 +107,7 @@ public class GestionUtilisateur {
 	}
 
 	public Utilisateur getUtilisateur(String login) {
-		return bdd.getUtilisateur(login);
+		return dao.getUtilisateur(login);
 	}
 	
 
