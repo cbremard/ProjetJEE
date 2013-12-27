@@ -16,6 +16,12 @@ public class GestionProjet {
 	@EJB
 	private Dao dao;
 
+	/**
+	 * Enregistrement d'un projet en BDD
+	 * @param projet : le projet à enregistrer
+	 * @param uri : l'URI ayant parmit d'accéder à ce service
+	 * @return code 201 en cas de succès, 400 si le projet n'est pas correctement construit
+	 */
 	public Response addProjet(Projet projet, UriInfo uri) {
 		String erreur;
 		URI uriReponse;
@@ -31,6 +37,13 @@ public class GestionProjet {
 		return reponse;
 	}
 
+	/**
+	 * Modifier un projet
+	 * @param newProjet : le projet contenant les modification à apporter
+	 * @param nomOldProjet : nom du projet sur lequel porte les modifications
+	 * @param uri : l'URI ayant parmit d'accéder à ce service
+	 * @return code 201 en cas de succès, 400 si les modifcations ne peuvent pas être prises en compte
+	 */
 	public Response modifierProjet(final Projet newProjet, final String nomOldProjet, UriInfo uri) {
 		Response reponse;
 		Projet oldProjet;
@@ -46,18 +59,36 @@ public class GestionProjet {
 		return reponse;
 	}
 
+	/**
+	 * Récupérer un projet par son nom (correspond à la cléprimaire en base de données)
+	 * @param nom : le nom du projet recherché
+	 * @return Un projet en cas de succès, null sinon
+	 */
 	public Projet getProjet(String nom) {
 		return dao.getProjet(nom);
 	}
 
+	/**
+	 * Récupération de l'ensemble des projets présent en base de données
+	 * @return La liste de l'ensemble des projets présent en base de données
+	 */
 	public List<Projet> getProjets() {
 		return dao.getProjets();
 	}
 
+	/**
+	 * Suppression de la base de données d'un projet.
+	 * @param projetAsupprimer : le projet à supprimer de la base de données
+	 */
 	private void removeProjet(Projet oldProjet) {
 		dao.removeProjet(oldProjet);
 	}
 
+	/**
+	 * Test la validité d'un projet
+	 * @param projet : le projet à tester
+	 * @return true si le projet est valide, false sinon
+	 */
 	private String projetTestValidite(Projet projet) {
 		String resultat;
 		if(projet.getNom().length()==0){
