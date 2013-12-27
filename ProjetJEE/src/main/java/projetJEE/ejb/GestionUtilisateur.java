@@ -22,8 +22,8 @@ public class GestionUtilisateur {
 	
 	/**
 	 * Stockage d'un utilisateur dans la base de données
-	 * @param utilisateur : l'utilsateur à persister
-	 * @return l'utilisateur fourni en paramètre
+	 * @param utilisateur : l'utilsateur à enregistrer en base de données
+	 * @return code 201 en cas de succès, 400 si l'utilisateur n'est pas correctement construit
 	 */
 	public Response addUtilisateur(final Utilisateur utilisateur, final UriInfo uri){
 		String erreur;
@@ -41,10 +41,17 @@ public class GestionUtilisateur {
 		return reponse;
 	}
 
+	/**
+	 * Récupération d'une liste paginée des utilisateurs enregistrés en BDD
+	 * @param page : la page à afficher
+	 * @param nbItems : le nombre d'utilisateur à afficher
+	 * @param uri : l'uri ayant parmit d'accéder à ce service
+	 * @return La liste paginée des utilisateurs enregistrés en BDD
+	 */
 	public UtilisateurListe getUtilisateurs(final int page, final int nbItems, final UriInfo uri) {
 		List<Utilisateur> utilisateurs;
 		UtilisateurListe utilisateursPartiel;
-		mettreAjourListeDesAnomaliesParUtilisateur();
+		mettreAjourListeDesAnomaliesDesUtilisateurs();
 		utilisateurs = dao.getUtilisateurs();
 		utilisateursPartiel = new UtilisateurListe();
 		if(page>0 && nbItems>0 && nbItems*(page-1)<utilisateurs.size()){
@@ -62,23 +69,44 @@ public class GestionUtilisateur {
 		return utilisateursPartiel;
 	}
 
+	/**
+	 * Récupération d'un utilisateur par son login (correspond à la clé primaire en base de données)
+	 * @param login : le login de l'utilisateur recherché
+	 * @return Un Utilisateur en cas de succès, null en cas d'échec
+	 */
 	public Utilisateur getUtilisateur(String login) {
-		mettreAjourListeDesAnomaliesParUtilisateur();
+		mettreAjourListeDesAnomaliesDesUtilisateurs();
 		return dao.getUtilisateur(login);
 	}
 
+	/**
+	 * Récupération de la liste des anomalies associées à un utilisateur
+	 * @param login : le login de l'utilisateur sur lequel porte les recherches
+	 * @return la liste des anomalies associées à l'utilisateur en question 
+	 */
 	public List<Anomalie> getAnomaliesDeUtilisateur(String login) {
 		Utilisateur utilisateur;
 		List<Anomalie> anomalies = new ArrayList<Anomalie>();
 		utilisateur = dao.getUtilisateur(login);
 		if(utilisateur != null){
-			mettreAjourListeDesAnomaliesParUtilisateur();
+			mettreAjourListeDesAnomaliesDesUtilisateurs();
 			anomalies = utilisateur.getListeAnomalies();
 		}
 		return anomalies;
 	}
 
-	private void mettreAjourListeDesAnomaliesParUtilisateur() {
+	/**
+	 * Mise à jour de la liste des anomalies de chaque utilisateur.
+	 * 
+	 * Les utilisateurs et les projets sont tout deux reliés aux anomalies. 
+	 * Or l'application ne maintient à jour que la liaison projets-anomalies.
+	 * Ainsi, certains modifications de la liaison projets-anomalies ne vont
+	 * pas mettre à jour la liaison utilisateurs-anomalies.
+	 * C'est grâce à cette méthode, appelée à chaque manipulation d'un utilisateur,
+	 * Que l'on s'assure que les 2 liaisons projets-anomalies et utilisateurs-anomalies
+	 * sont concordantes. 
+	 */
+	private void mettreAjourListeDesAnomaliesDesUtilisateurs() {
 		List<Anomalie> anomalies = dao.getAnomalies();
 		List<Utilisateur> utilisateurs = dao.getUtilisateurs();
 		Utilisateur utilisateur;
@@ -136,7 +164,11 @@ public class GestionUtilisateur {
 		return resultat;
 	}
 
-
+	/**
+	 * Test la validité d'un email
+	 * @param email : l'email à tester
+	 * @return true si l'email est valide, false sinon
+	 */
 	private boolean emailTestValidite(String email) {
 		boolean resultat;
 		int indexDeLarobase;
