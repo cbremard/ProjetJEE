@@ -28,7 +28,7 @@ public class Dao {
 	private EntityManager bdd;
 	
 	/*
-	 *  Initialisation de la BDD pour repartir d'une base propre et connue
+	 *  Initialisation de la base de données pour repartir d'une base propre et connue
 	 */
 	
 	@SuppressWarnings("deprecation")
@@ -59,7 +59,7 @@ public class Dao {
 		Projet projet2 = new Projet(); projet2.setNom("projet2");
 		Note note2 = new Note(); note2.setDate(new Date(2013,9,1)); note2.setDescription("Affactation de l'anomalie à Corentin");
 		Note note3 = new Note(); note3.setDate(new Date(2013,10,15)); note3.setDescription("La solution de l'anomalie à été trouvée");
-		Note note4 = new Note(); note4.setDate(new Date(2013,11,30)); note4.setDescription("La solution de l'anomalie à été mise en place avec succés. Fin de l'anomalie.");
+		Note note4 = new Note(); note4.setDate(new Date(2013,11,30)); note4.setDescription("La solution de l'anomalie à été mise en place avec succès. Fin de l'anomalie.");
 		Anomalie anomalie3 = new Anomalie(); anomalie3.setSujet("anomalie3"); anomalie3.setDescription("Description de l'anomalie3"); anomalie3.setNomProjet("projet2"); anomalie3.setLoginUtilisateur("coco"); anomalie3.addNote(note2); anomalie3.setEtatToAffectee(); anomalie3.addNote(note3); anomalie3.setEtatToResolue(); anomalie3.addNote(note4); anomalie3.setEtatToFermee(); projet2.add(anomalie3);
 		persisterProjet(projet2);
 		Projet projet3 = new Projet(); projet3.setNom("projet3");
@@ -67,13 +67,13 @@ public class Dao {
 	}
 	
 	/*
-	 * Les Getters permettant de lire la BDD
+	 * Les Getters permettant de lire la base de données
 	 */
 	
 	/**
-	 * Récupération d'un utilisateur par son login (correspond à la clé primaire en BDD)
+	 * Récupération d'un utilisateur par son login (correspond à la clé primaire en base de données)
 	 * @param login : le login de l'utilisateur recherché
-	 * @return Un Utilisateur en cas de succés, null en cas d'échec
+	 * @return Un Utilisateur en cas de succès, null en cas d'échec
 	 */
 	@Lock(LockType.READ)
 	public Utilisateur getUtilisateur(String login) {
@@ -81,8 +81,8 @@ public class Dao {
 	}
 	
 	/**
-	 * Récupération de l'ensemble des utilisateurs présent en BDD
-	 * @return La liste de l'ensemble des utilisateurs présent en BDD 
+	 * Récupération de l'ensemble des utilisateurs présent en base de données
+	 * @return La liste de l'ensemble des utilisateurs présent en base de données 
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Utilisateur> getUtilisateurs() {
@@ -91,9 +91,9 @@ public class Dao {
 	}
 
 	/**
-	 * Récupérer un projet par son nom (correspond à la cléprimaire en BDD)
+	 * Récupérer un projet par son nom (correspond à la cléprimaire en base de données)
 	 * @param nom : le nom du projet recherché
-	 * @return Un projet en cas de succés, null sinon
+	 * @return Un projet en cas de succès, null sinon
 	 */
 	@Lock(LockType.READ)
 	public Projet getProjet(String nom) {
@@ -101,8 +101,8 @@ public class Dao {
 	}
 
 	/**
-	 * Récupération de l'ensemble des projets présent en BDD
-	 * @return La liste de l'ensemble des projets présent en BDD
+	 * Récupération de l'ensemble des projets présent en base de données
+	 * @return La liste de l'ensemble des projets présent en base de données
 	 */
 	@Lock(LockType.READ)
 	@SuppressWarnings("unchecked")
@@ -112,9 +112,9 @@ public class Dao {
 	}
 
 	/**
-	 * Récupération d'une anomalie par son id (correspond à la clé primaire en BDD)
+	 * Récupération d'une anomalie par son id (correspond à la clé primaire en base de données)
 	 * @param id : l'identifiant de l'anomalie recherchée (généré automatique par le modèle JPA)
-	 * @return Une anomalie en cas de succés, null sinon
+	 * @return Une anomalie en cas de succès, null sinon
 	 */
 	@Lock(LockType.READ)
 	public Anomalie getAnomalie(long id) {
@@ -140,7 +140,7 @@ public class Dao {
 	 * L'unicité de l'anomalie correspondant à un couple nomProjet/sujetAnomalie est vérifié à l'enregistrement d'une anomalie par la méthode projetJEE.ejb.GestionAnomalie.anomalieTestValidite(Anomalie, String, boolean).
 	 * @param nomProjet : le nom du projet auquel l'anomalie recherché est associée
 	 * @param sujetAnomalie : le sujet de l'anomalie recherchée
-	 * @return Une anomalie en cas de succés, null sion
+	 * @return Une anomalie en cas de succès, null sion
 	 */
 	@Lock(LockType.READ)
 	public Anomalie getAnomalieOfProject(String nomProjet, String sujetAnomalie) {
@@ -163,8 +163,8 @@ public class Dao {
 	}
 
 	/**
-	 * Récupération de l'ensemble des anomalies enregistrées en BDD.
-	 * @return La liste de l'ensemble des anomalies présentent en BDD
+	 * Récupération de l'ensemble des anomalies enregistrées en base de données.
+	 * @return La liste de l'ensemble des anomalies présentent en base de données
 	 */
 	@Lock(LockType.READ)
 	@SuppressWarnings("unchecked")
@@ -174,12 +174,12 @@ public class Dao {
 	}
 	
 	/*
-	 * Les Méthodes permettant de supprimer des éléments de la BDD
+	 * Les Méthodes permettant de supprimer des éléments de la base de données
 	 */
 
 	/**
-	 * Suppression de la BDD d'un projet.
-	 * @param projetAsupprimer : le projet à supprimer de la BDD
+	 * Suppression de la base de données d'un projet.
+	 * @param projetAsupprimer : le projet à supprimer de la base de données
 	 */
 	@Lock(LockType.WRITE)
 	public void removeProjet(Projet projetAsupprimer) {
@@ -187,8 +187,8 @@ public class Dao {
 	}
 
 	/**
-	 * Suppression de la BDD d'une anomalie.
-	 * @param anomalieAsupprimer : l'anomalie à supprimer de la BDD
+	 * Suppression de la base de données d'une anomalie.
+	 * @param anomalieAsupprimer : l'anomalie à supprimer de la base de données
 	 */
 	@Lock(LockType.WRITE)
 	public void removeAnomalie(Anomalie anomalieAsupprimer) {
@@ -196,13 +196,13 @@ public class Dao {
 	}
 	
 	/*
-	 * Les méthodes permettant d'écrire dans la BDD
+	 * Les méthodes permettant d'écrire dans la base de données
 	 */
 
 	/**
-	 * Enregistrer un utilisateur en BDD
-	 * @param utilisateur : l'utilisateur à enregistrer en BDD
-	 * @return L'utilisateur qui a été fournit en paramètre une fois enregisté en BDD
+	 * Enregistrer un utilisateur en base de données
+	 * @param utilisateur : l'utilisateur à enregistrer en base de données
+	 * @return L'utilisateur qui a été fournit en paramètre une fois enregisté en base de données
 	 */
 	@Lock(LockType.WRITE)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -216,9 +216,9 @@ public class Dao {
     }
 
 	/**
-	 * Enregistrer un projet en BDD.
-	 * @param projet : le projet à enregistrer en BDD
-	 * @return Le projet qui a été fourni en paramètre une fois enregisté en BDD
+	 * Enregistrer un projet en base de données.
+	 * @param projet : le projet à enregistrer en base de données
+	 * @return Le projet qui a été fourni en paramètre une fois enregisté en base de données
 	 */
 	@Lock(LockType.WRITE)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -232,10 +232,10 @@ public class Dao {
     }
 
 	/**
-	 * Enregistrement d'une anomalie dans la BDD
+	 * Enregistrement d'une anomalie dans la base de données
 	 * @param nomProjet : nom du projet rattaché à l'anomalie
-	 * @param anomalie : l'anomalie a enregistrer en BDD
-	 * @return L'anomalie fournie en paramètre une fois enregistée en BDD
+	 * @param anomalie : l'anomalie a enregistrer en base de données
+	 * @return L'anomalie fournie en paramètre une fois enregistée en base de données
 	 */
 	@Lock(LockType.WRITE)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -256,9 +256,9 @@ public class Dao {
 	 */
 
 	/**
-	 * Test l'existence d'un projet dans la BDD
-	 * @param projet : le projet potentiellement présent en BDD
-	 * @return true si le projet en question est présent en BDD, false sinon
+	 * Test l'existence d'un projet dans la base de données
+	 * @param projet : le projet potentiellement présent en base de données
+	 * @return true si le projet en question est présent en base de données, false sinon
 	 */
 	@Lock(LockType.READ)
 	public boolean ProjetExisteDejaEnBase(final Projet projet) {
@@ -266,9 +266,9 @@ public class Dao {
 	}
 
 	/**
-	 * Test l'éxistence d'un utilisateur en BDD
-	 * @param utilisateurLogin : le login de l'utilisateur potentiellement enregistré en BDD
-	 * @return true si l'utilisateur en question est présent en BDD
+	 * Test l'éxistence d'un utilisateur en base de données
+	 * @param utilisateurLogin : le login de l'utilisateur potentiellement enregistré en base de données
+	 * @return true si l'utilisateur en question est présent en base de données
 	 */
 	@Lock(LockType.READ)
 	public boolean UtilisateurExisteDejaEnBase(final String utilisateurLogin) {

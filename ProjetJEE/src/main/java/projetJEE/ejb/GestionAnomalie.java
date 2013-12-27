@@ -19,6 +19,13 @@ public class GestionAnomalie {
 	@EJB
 	private Dao dao;
 
+	/**
+	 * Enregistrement en BDD d'une anomalie associée à un projet.
+	 * @param anomalie : l'anomalie à enregistrer en BDD
+	 * @param nomProjet : nom du projet associée à l'anomalie
+	 * @param uri : l'URI ayant parmit d'accéder à ce service
+	 * @return code 201 en cas de succès, 400 si l'anomlie n'est pas correctement formée
+	 */
 	public Response addAnomalie(Anomalie anomalie, String nomProjet, UriInfo uri) {
 		String erreur;
 		URI uriReponse;
@@ -35,6 +42,14 @@ public class GestionAnomalie {
 		return reponse;
 	}
 
+	/**
+	 * Modifier une anomalie déjà présente en BDD
+	 * @param anomalieModifie : la nouvelle anomalie contenant les modifications
+	 * @param nomProjet : le nom du projet associé
+	 * @param sujetAncinneAnomalie : le sujet de l'anomalie a modifier
+	 * @param uri : l'URI ayant parmit d'accéder à ce service
+	 * @return code 201 en cas de succès, 400 si les modifications a apporter ne sont pas valides
+	 */
 	public Response modifierAnomalie(Anomalie anomalieModifie,
 		String nomProjet, String sujetAncinneAnomalie, UriInfo uri) {
 		String erreur;
@@ -75,6 +90,14 @@ public class GestionAnomalie {
 		return reponse;
 	}
 
+	/**
+	 * Affectatiion d'un utilisateur à une anomalie
+	 * @param login : le login de l'utilisateur à affecter à l'anomalie souhaitée
+	 * @param nomProjet : le nom du projet auquel l'anomalie est rattachée
+	 * @param sujetAnomalie : le sujet de l'anomalie
+	 * @param uri : l'URI ayant parmit d'accéder à ce service
+	 * @return code 201 en cas de succès, 400 si la manipaluation n'a pas était correctement initialisé
+	 */
 	public Response addUtilisateurToAnomalie(String login, String nomProjet, String sujetAnomalie, UriInfo uri) {
 		URI uriReponse;
 		Response reponse;
@@ -122,6 +145,13 @@ public class GestionAnomalie {
 		return reponse;
 	}
 
+	/**
+	 * Test la validité d'une anomalie
+	 * @param anomalie : l'anomalie à tester
+	 * @param nomProjet : le nom du projet associé à l'anomalie à tester
+	 * @param regarderSiLAnomalieExisteDeja : tester ou non la présence de cette anomalie en BDD
+	 * @return true si l'anomalie est valide, false sinon
+	 */
 	private String anomalieTestValidite(Anomalie anomalie, String nomProjet, boolean regarderSiLAnomalieExisteDeja) {
 		String resultat = "";
 		List<Anomalie> anomalies;
@@ -146,18 +176,45 @@ public class GestionAnomalie {
 		return resultat;
 	}
 
+	/**
+	 * Récupération d'une anomalie par son id (correspond à la clé primaire en base de données)
+	 * @param id : l'identifiant de l'anomalie recherchée (généré automatique par le modèle JPA)
+	 * @return Une anomalie en cas de succès, null sinon
+	 */
 	public Anomalie getAnomalie(long id) {
 		return dao.getAnomalie(id);
 	}
 
+	/**
+	 * Récupération de l'ensemble des anomalies associées à un projet donné
+	 * @param nomProjet : nom du projet pour lequel on recherche les anomalies
+	 * @return La liste des anomalies du projet donné
+	 */
 	public List<Anomalie> getAnomaliesOfProject(String nomProjet) {
 		return dao.getAnomaliesOfProject(nomProjet);
 	}
 
+	/**
+	 * Récupération d'une anomalie en fonction de son sujet et du nom du projet qui lui est associé.
+	 * L'unicité de l'anomalie correspondant à un couple nomProjet/sujetAnomalie est vérifié à l'enregistrement d'une anomalie par la méthode projetJEE.ejb.GestionAnomalie.anomalieTestValidite(Anomalie, String, boolean).
+	 * @param nomProjet : le nom du projet auquel l'anomalie recherché est associée
+	 * @param sujetAnomalie : le sujet de l'anomalie recherchée
+	 * @return Une anomalie en cas de succès, null sion
+	 */
 	public Anomalie getAnomalieOfProject(String nomProjet, String sujetAnomalie) {
 		return dao.getAnomalieOfProject(nomProjet, sujetAnomalie);
 	}
 
+	/**
+	 * Changer l'état d'une anomalie
+	 * @param nomProjet : le nom du projet associé à l'anomalie à modifier
+	 * @param sujetAnomalie : le sujet de l'anomalie à modifier
+	 * @param note : la note à ajouter lors de ce changement d'état
+	 * @param uri : l'URI ayant parmit d'accéder à ce service
+	 * @param newEtat : le nouvel état de l'anomalie (ne prendre que les valeurs "AFFECTEE", "RESOLUE" et "FERMEE" 
+	 * @return code 201 en cas de succès, 400 sinon
+	 * @throws Exception : en cas de demande d'un nouvel état n'existant pas
+	 */
 	public Response changerEtatDuneAnomalie(String nomProjet,
 			String sujetAnomalie, Note note, UriInfo uri,String newEtat) throws Exception {
 		URI uriReponse;
