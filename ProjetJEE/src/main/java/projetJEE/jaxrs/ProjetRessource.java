@@ -2,12 +2,15 @@ package projetJEE.jaxrs;
 
 import java.util.List;
 
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,6 +18,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import projetJEE.ejb.GestionAnomalie;
@@ -23,6 +27,7 @@ import projetJEE.modele.Anomalie;
 import projetJEE.modele.Note;
 import projetJEE.modele.Projet;
 
+@DeclareRoles({"ADMIN","USER"})
 @Path("projets")
 public class ProjetRessource {
 
@@ -40,9 +45,13 @@ public class ProjetRessource {
 	@POST
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response creerProjet(final Projet projet, @Context final UriInfo uri){
+	public Response creerProjet(final Projet projet, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service de création d'un projet");
-		return gestionProjet.addProjet(projet, uri);
+		if(security.isUserInRole("USER")){
+			return gestionProjet.addProjet(projet, uri);
+		}else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+		}
 	}
 
 	/**
@@ -52,13 +61,17 @@ public class ProjetRessource {
 	 * @param uri : l'URI ayant parmit d'accéder à ce service
 	 * @return code 201 en cas de succès, 400 si les modifcations ne peuvent pas être prises en compte
 	 */
-	@POST
+	@PUT
 	@Consumes(MediaType.APPLICATION_XML)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Path("{nom}")
-	public Response modifierProjet(final Projet newProjet, @PathParam("nom") final String nomOldProjet, @Context final UriInfo uri){
+	public Response modifierProjet(final Projet newProjet, @PathParam("nom") final String nomOldProjet, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service de modification d'un projet");
-		return gestionProjet.modifierProjet(newProjet, nomOldProjet, uri);
+		if(security.isUserInRole("USER")){
+			return gestionProjet.modifierProjet(newProjet, nomOldProjet, uri);
+		}else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+		}
 	}
 
 	/**
@@ -68,13 +81,18 @@ public class ProjetRessource {
 	 * @param uri : l'URI ayant parmit d'accéder à ce service
 	 * @return code 201 en cas de succès, 400 si l'anomlie n'est pas correctement formée
 	 */
+	@RolesAllowed("USER")
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Path("{nom}/anomalies")
-	public Response addAnomalie(final Anomalie anomalie, @PathParam("nom") final String nomProjet, @Context final UriInfo uri){
+	public Response addAnomalie(final Anomalie anomalie, @PathParam("nom") final String nomProjet, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service d'ajout d'une anomalie à un projet");
-		return gestionAnomalie.addAnomalie(anomalie, nomProjet, uri);
+		if(security.isUserInRole("USER")){
+			return gestionAnomalie.addAnomalie(anomalie, nomProjet, uri);
+		}else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+		}
 	}
 
 	/**
@@ -85,16 +103,22 @@ public class ProjetRessource {
 	 * @param uri : l'URI ayant parmit d'accéder à ce service
 	 * @return code 201 en cas de succès, 400 si les modifications a apporter ne sont pas valides
 	 */
-	@POST
+	@RolesAllowed("USER")
+	@PUT
 	@Consumes(MediaType.APPLICATION_XML)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Path("{nom}/anomalies/{sujet}")
 	public Response modifierAnomalie(final Anomalie anomalieModifie,
 									@PathParam("nom") final String nomProjet,
 									@PathParam("sujet") final String sujetAncinneAnomalie,
-									@Context final UriInfo uri){
+									@Context final UriInfo uri,
+									@Context SecurityContext security){
 		System.out.println("Appel du service de modification d'une anomalie d'un projet");
-		return gestionAnomalie.modifierAnomalie(anomalieModifie, nomProjet, sujetAncinneAnomalie, uri);
+		if(security.isUserInRole("USER")){
+			return gestionAnomalie.modifierAnomalie(anomalieModifie, nomProjet, sujetAncinneAnomalie, uri);
+		}else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+		}
 	}
 
 	/**
@@ -105,14 +129,19 @@ public class ProjetRessource {
 	 * @param uri : l'URI ayant parmit d'accéder à ce service 
 	 * @return code 201 en cas de succès, 400 sinon
 	 */
+	@RolesAllowed("USER")
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Path("{nom}/anomalies/{sujet}/AFFECTEE")
-	public Response changeEtatToAffectee(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri){
+	public Response changeEtatToAffectee(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service de modification de l'état d'une anomalie d'un projet pour un état AFFECTEE");
 		try {
-			return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri, "AFFECTEE");
+			if(security.isUserInRole("USER")){
+				return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri, "AFFECTEE");
+			}else{
+				return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+			}
 		} catch (Exception e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
@@ -126,14 +155,19 @@ public class ProjetRessource {
 	 * @param uri : l'URI ayant parmit d'accéder à ce service 
 	 * @return code 201 en cas de succès, 400 sinon
 	 */
+	@RolesAllowed("USER")
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Path("{nom}/anomalies/{sujet}/RESOLUE")
-	public Response changeEtatToResolue(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri){
+	public Response changeEtatToResolue(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service de modification de l'état d'une anomalie d'un projet pour un état RESOLUE");
 		try {
-			return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri, "RESOLUE");
+			if(security.isUserInRole("USER")){
+				return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri, "RESOLUE");
+			}else{
+				return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+			}
 		} catch (Exception e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
@@ -147,14 +181,19 @@ public class ProjetRessource {
 	 * @param uri : l'URI ayant parmit d'accéder à ce service 
 	 * @return code 201 en cas de succès, 400 sinon
 	 */
+	@RolesAllowed("USER")
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Path("{nom}/anomalies/{sujet}/FERMEE")
-	public Response changeEtatToFermee(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri){
+	public Response changeEtatToFermee(final Note note, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujetAnomalie, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service de modification de l'état d'une anomalie d'un projet pour un état FERMEE");
 		try {
-			return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri,"FERMEE");
+			if(security.isUserInRole("USER")){
+				return gestionAnomalie.changerEtatDuneAnomalie(nomProjet, sujetAnomalie, note, uri,"FERMEE");
+			}else{
+				return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+			}
 		} catch (Exception e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
@@ -168,13 +207,18 @@ public class ProjetRessource {
 	 * @param uri : l'URI ayant parmit d'accéder à ce service
 	 * @return code 201 en cas de succès, 400 si la manipaluation n'a pas était correctement initialisé
 	 */
-	@POST
+	@RolesAllowed("USER")
+	@PUT
 	@Consumes(MediaType.APPLICATION_XML)
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Path("{nom}/anomalies/{sujet}/addUtilisateur")
-	public Response addUtilisateurToAnomalie(@QueryParam("login")  final String login, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujet, @Context final UriInfo uri){
+	public Response addUtilisateurToAnomalie(@QueryParam("login")  final String login, @PathParam("nom") final String nomProjet, @PathParam("sujet") final String sujet, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service d'ajout d'un utilisateur à une anomalie d'un projet");
-		return gestionAnomalie.addUtilisateurToAnomalie(login, nomProjet, sujet, uri);
+		if(security.isUserInRole("USER")){
+			return gestionAnomalie.addUtilisateurToAnomalie(login, nomProjet, sujet, uri);
+		}else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+		}
 	}
 
 	/**

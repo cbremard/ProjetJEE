@@ -30,8 +30,6 @@ public class Utilisateur {
 	private String email;
     @XmlElement(name = "MotDePasse", required = true)
 	private String motDePasse;
-    @XmlElement(name = "IsAdmin")
-	private boolean isAdmin;
     
     @XmlElementWrapper(name = "Anomalies")
     @XmlElement(name = "Anomalie")
@@ -47,7 +45,6 @@ public class Utilisateur {
 		this.prenom="";
 		this.email="";
 		this.motDePasse="";
-		this.isAdmin=false;
 		this.listeAnomalies = new ArrayList<Anomalie>();
 	}
 	public String getNom() {
@@ -79,12 +76,6 @@ public class Utilisateur {
 	}
 	public void setMotDePasse(String motDePasse) {
 		this.motDePasse = motDePasse;
-	}
-	public boolean isAdmin() {
-		return isAdmin;
-	}
-	public void setAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
 	}
 	public List<Anomalie> getListeAnomalies() {
 		return listeAnomalies;

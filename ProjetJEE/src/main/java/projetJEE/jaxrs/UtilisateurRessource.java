@@ -1,7 +1,7 @@
 package projetJEE.jaxrs;
 
-import java.util.List;
-
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -16,13 +16,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import projetJEE.ejb.GestionUtilisateur;
-import projetJEE.modele.Anomalie;
 import projetJEE.modele.Utilisateur;
-import projetJEE.modele.UtilisateurListe;
 
+@DeclareRoles({"ADMIN","USER"})
 @Path("utilisateurs")
 public class UtilisateurRessource {
 	
@@ -37,9 +37,13 @@ public class UtilisateurRessource {
 	@POST
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Consumes(MediaType.APPLICATION_XML)
-	public Response creerUtilisateur(final Utilisateur utilisateur, @Context final UriInfo uri){
+	public Response creerUtilisateur(final Utilisateur utilisateur, @Context final UriInfo uri, @Context SecurityContext security){
 		System.out.println("Appel du service de création d'un utilisateur");
-		return gestionUtilisateur.addUtilisateur(utilisateur, uri);
+		if (security.isUserInRole("ADMIN")){
+			return gestionUtilisateur.addUtilisateur(utilisateur, uri);
+		}else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux administrateurs").build();
+		}
 	}
 
 	/**
@@ -49,12 +53,17 @@ public class UtilisateurRessource {
 	 * @param uri : l'uri ayant parmit d'accéder à ce service
 	 * @return La liste paginée des utilisateurs enregistrés en BDD
 	 */
+	@RolesAllowed("ADMIN")
     @GET
     @Produces({MediaType.APPLICATION_XML})
-    public UtilisateurListe getUtilisateur(@DefaultValue("1") @QueryParam("page")  final int page, @DefaultValue("10") @QueryParam("nbItems")  final int nbItems,  @Context final UriInfo uri) {
-        System.out.println("Appel du service de récupération des utilisateurs");
-        return gestionUtilisateur.getUtilisateurs(page, nbItems, uri);
-    }
+	public Response getUtilisateur(@DefaultValue("1") @QueryParam("page")  final int page, @DefaultValue("10") @QueryParam("nbItems")  final int nbItems,  @Context final UriInfo uri, @Context SecurityContext security) {
+		System.out.println("Appel du service de récupération des utilisateurs");
+		if(security.isUserInRole("ADMIN")){
+			return gestionUtilisateur.getUtilisateurs(page, nbItems, uri);
+		}else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux administrateurs").build();
+		}
+	}
 
 	/**
 	 * Récupération d'un utilisateur par son login (correspond à la clé primaire en base de données)
@@ -64,7 +73,7 @@ public class UtilisateurRessource {
     @GET
     @Produces({MediaType.APPLICATION_XML})
     @Path("{login}")
-    public Utilisateur getUtilisateur(@PathParam("login") final String login) {
+    public Response getUtilisateur(@PathParam("login") final String login) {
         System.out.println("Appel du service de récupération d'un utilisateur par son login");
         return gestionUtilisateur.getUtilisateur(login);
     }
@@ -77,9 +86,13 @@ public class UtilisateurRessource {
     @GET
     @Produces({MediaType.APPLICATION_XML})
     @Path("{login}/anomalies")
-    public List<Anomalie> getAnomaliesDeUtilisateur(@PathParam("login") final String login) {
+    public Response getAnomaliesDeUtilisateur(@PathParam("login") final String login, @Context SecurityContext security) {
         System.out.println("Appel du service de récupération des anomalies affectées à un utilisateur");
-        return gestionUtilisateur.getAnomaliesDeUtilisateur(login);
+        if(security.isUserInRole("USER")){
+        	return gestionUtilisateur.getAnomaliesDeUtilisateur(login);
+        }else{
+			return Response.status(Response.Status.UNAUTHORIZED).entity("L'utilisateur \""+security.getUserPrincipal().getName()+"\" ne peut pas accéder à ce service réservé aux utilisateurs du système").build();
+		}
     }
     
 

@@ -48,7 +48,7 @@ public class GestionUtilisateur {
 	 * @param uri : l'uri ayant parmit d'accéder à ce service
 	 * @return La liste paginée des utilisateurs enregistrés en BDD
 	 */
-	public UtilisateurListe getUtilisateurs(final int page, final int nbItems, final UriInfo uri) {
+	public Response getUtilisateurs(final int page, final int nbItems, final UriInfo uri) {
 		List<Utilisateur> utilisateurs;
 		UtilisateurListe utilisateursPartiel;
 		mettreAjourListeDesAnomaliesDesUtilisateurs();
@@ -66,7 +66,7 @@ public class GestionUtilisateur {
 				utilisateursPartiel.setPageSuivante(uri.getAbsolutePath()+"?page="+(page+1)+"&nbItems="+nbItems);
 			}
 		}
-		return utilisateursPartiel;
+		return Response.ok(utilisateursPartiel).build();
 	}
 
 	/**
@@ -74,9 +74,9 @@ public class GestionUtilisateur {
 	 * @param login : le login de l'utilisateur recherché
 	 * @return Un Utilisateur en cas de succès, null en cas d'échec
 	 */
-	public Utilisateur getUtilisateur(String login) {
+	public Response getUtilisateur(String login) {
 		mettreAjourListeDesAnomaliesDesUtilisateurs();
-		return dao.getUtilisateur(login);
+		return Response.ok(dao.getUtilisateur(login)).build();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class GestionUtilisateur {
 	 * @param login : le login de l'utilisateur sur lequel porte les recherches
 	 * @return la liste des anomalies associées à l'utilisateur en question 
 	 */
-	public List<Anomalie> getAnomaliesDeUtilisateur(String login) {
+	public Response getAnomaliesDeUtilisateur(String login) {
 		Utilisateur utilisateur;
 		List<Anomalie> anomalies = new ArrayList<Anomalie>();
 		utilisateur = dao.getUtilisateur(login);
@@ -92,7 +92,7 @@ public class GestionUtilisateur {
 			mettreAjourListeDesAnomaliesDesUtilisateurs();
 			anomalies = utilisateur.getListeAnomalies();
 		}
-		return anomalies;
+		return Response.ok(anomalies).build();
 	}
 
 	/**

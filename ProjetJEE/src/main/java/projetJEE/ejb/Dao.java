@@ -34,21 +34,21 @@ public class Dao {
 	@SuppressWarnings("deprecation")
 	@PostConstruct
     public void initialisation() {
-		Utilisateur utilisateur1 = new Utilisateur(); utilisateur1.setLogin("coco"); utilisateur1.setPrenom("Corentin"); utilisateur1.setNom("Brémard"); utilisateur1.setMotDePasse("coco"); utilisateur1.setEmail("corentin.bremard@eleve.ensai.fr"); utilisateur1.setAdmin(true);
+		Utilisateur utilisateur1 = new Utilisateur(); utilisateur1.setLogin("coco"); utilisateur1.setPrenom("Corentin"); utilisateur1.setNom("Brémard"); utilisateur1.setMotDePasse("coco"); utilisateur1.setEmail("corentin.bremard@eleve.ensai.fr");
 		persisterUtilisateur(utilisateur1);
-		Utilisateur utilisateur2 = new Utilisateur(); utilisateur2.setLogin("nyfa"); utilisateur2.setPrenom("Fanny"); utilisateur2.setNom("Thomas"); utilisateur2.setMotDePasse("nyfa"); utilisateur2.setEmail("fanny.thomas@eleve.ensai.fr"); utilisateur2.setAdmin(true);
+		Utilisateur utilisateur2 = new Utilisateur(); utilisateur2.setLogin("nyfa"); utilisateur2.setPrenom("Fanny"); utilisateur2.setNom("Thomas"); utilisateur2.setMotDePasse("nyfa"); utilisateur2.setEmail("fanny.thomas@eleve.ensai.fr");
 		persisterUtilisateur(utilisateur2);
-		Utilisateur utilisateur3 = new Utilisateur(); utilisateur3.setLogin("michu"); utilisateur3.setPrenom("Madame"); utilisateur3.setNom("Michu"); utilisateur3.setMotDePasse("michu"); utilisateur3.setEmail("madame.michu@email.com"); utilisateur3.setAdmin(false);
+		Utilisateur utilisateur3 = new Utilisateur(); utilisateur3.setLogin("michu"); utilisateur3.setPrenom("Madame"); utilisateur3.setNom("Michu"); utilisateur3.setMotDePasse("michu"); utilisateur3.setEmail("madame.michu@email.com");
 		persisterUtilisateur(utilisateur3);
-		Utilisateur utilisateur4 = new Utilisateur(); utilisateur4.setLogin("login1"); utilisateur4.setPrenom("Prenom1"); utilisateur4.setNom("Nom1"); utilisateur4.setMotDePasse("login1"); utilisateur4.setEmail("prenom1.nom1@email.truc"); utilisateur4.setAdmin(false);
+		Utilisateur utilisateur4 = new Utilisateur(); utilisateur4.setLogin("login1"); utilisateur4.setPrenom("Prenom1"); utilisateur4.setNom("Nom1"); utilisateur4.setMotDePasse("login1"); utilisateur4.setEmail("prenom1.nom1@email.truc");
 		persisterUtilisateur(utilisateur4);
-		Utilisateur utilisateur5 = new Utilisateur(); utilisateur5.setLogin("login2"); utilisateur5.setPrenom("Prenom2"); utilisateur5.setNom("Nom2"); utilisateur5.setMotDePasse("login1"); utilisateur5.setEmail("prenom2.nom2@email.chose"); utilisateur5.setAdmin(false);
+		Utilisateur utilisateur5 = new Utilisateur(); utilisateur5.setLogin("login2"); utilisateur5.setPrenom("Prenom2"); utilisateur5.setNom("Nom2"); utilisateur5.setMotDePasse("login1"); utilisateur5.setEmail("prenom2.nom2@email.chose");
 		persisterUtilisateur(utilisateur5);
-		Utilisateur utilisateur6 = new Utilisateur(); utilisateur6.setLogin("login3"); utilisateur6.setPrenom("Prenom3"); utilisateur6.setNom("Nom3"); utilisateur6.setMotDePasse("login3"); utilisateur6.setEmail("prenom3.nom3@email.machin"); utilisateur6.setAdmin(false);
+		Utilisateur utilisateur6 = new Utilisateur(); utilisateur6.setLogin("login3"); utilisateur6.setPrenom("Prenom3"); utilisateur6.setNom("Nom3"); utilisateur6.setMotDePasse("login3"); utilisateur6.setEmail("prenom3.nom3@email.machin");
 		persisterUtilisateur(utilisateur6);
-		Utilisateur utilisateur7 = new Utilisateur(); utilisateur7.setLogin("login4"); utilisateur7.setPrenom("Prenom4"); utilisateur7.setNom("Nom4"); utilisateur7.setMotDePasse("login4"); utilisateur7.setEmail("prenom4.nom4@email.bidule"); utilisateur7.setAdmin(false);
+		Utilisateur utilisateur7 = new Utilisateur(); utilisateur7.setLogin("login4"); utilisateur7.setPrenom("Prenom4"); utilisateur7.setNom("Nom4"); utilisateur7.setMotDePasse("login4"); utilisateur7.setEmail("prenom4.nom4@email.bidule");
 		persisterUtilisateur(utilisateur7);
-		Utilisateur utilisateur8 = new Utilisateur(); utilisateur8.setLogin("login5"); utilisateur8.setPrenom("Prenom5"); utilisateur8.setNom("Nom5"); utilisateur8.setMotDePasse("login5"); utilisateur8.setEmail("prenom5.nom5@email.uk"); utilisateur8.setAdmin(false);
+		Utilisateur utilisateur8 = new Utilisateur(); utilisateur8.setLogin("login5"); utilisateur8.setPrenom("Prenom5"); utilisateur8.setNom("Nom5"); utilisateur8.setMotDePasse("login5"); utilisateur8.setEmail("prenom5.nom5@email.uk");
 		persisterUtilisateur(utilisateur8);
 
 		Projet projet1 = new Projet(); projet1.setNom("projet1");
