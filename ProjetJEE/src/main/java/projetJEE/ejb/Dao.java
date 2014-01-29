@@ -31,7 +31,6 @@ public class Dao {
 	 *  Initialisation de la base de données pour repartir d'une base propre et connue
 	 */
 	
-	@SuppressWarnings("deprecation")
 	@PostConstruct
     public void initialisation() {
 		Utilisateur utilisateur1 = new Utilisateur(); utilisateur1.setLogin("coco"); utilisateur1.setPrenom("Corentin"); utilisateur1.setNom("Brémard"); utilisateur1.setMotDePasse("coco"); utilisateur1.setEmail("corentin.bremard@eleve.ensai.fr");
